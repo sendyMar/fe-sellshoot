@@ -112,23 +112,27 @@ export function useExtraction() {
         } else if (res.data?.failed?.length > 0) {
           allSuccess = false;
           const aiError = res.data.failed[0].error || "";
-          if (aiError.includes("429") || aiError.includes("Quota") || aiError.includes("Exhausted") || aiError.includes("RESOURCE_EXHAUSTED")) {
-            errorMessage = "Batas token/kuota API Google Gemini Anda telah habis (429 Quota Exceeded). Silakan gunakan API Key yang berbeda.";
+          if (aiError.includes("429") || aiError.includes("Quota") || aiError.includes("Exhausted") || aiError.includes("RESOURCE_EXHAUSTED") || aiError.includes("rate_limit")) {
+            errorMessage = "Batas kuota API AI telah habis (Rate Limit). Tunggu beberapa saat lalu coba lagi.";
+            break; // Hanya berhenti jika rate limit (tidak ada gunanya lanjut)
           } else {
             errorMessage = `AI Error: ${aiError.substring(0, 100)}...`;
+            // Lanjutkan proses gambar berikutnya meskipun 1 gagal
           }
-          // Stop processing if we hit quota limits or other major errors
-          break;
         }
 
         // Fetch updates for UI after each item
         await fetchScreenshots();
         await fetchResults();
 
-        // Delay 5 detik sebelum request berikutnya (hanya jika masih ada antrean berikutnya)
+        // Delay 20 detik antar gambar (Groq Free Tier: 8.000 TPM, ~2.000 token/gambar)
+        // Dengan 20 detik, maksimal 3 gambar/menit × 2.000 = 6.000 token → aman di bawah 8K
         if (i < pendingScreenshots.length - 1) {
-          setProcessingProgress(`Menunggu jeda aman API (5s)... (${i + 1}/${pendingScreenshots.length})`);
-          await new Promise(r => setTimeout(r, 5000));
+          const delaySeconds = 20;
+          for (let sec = delaySeconds; sec > 0; sec--) {
+            setProcessingProgress(`Menunggu jeda API (${sec}s)... (${i + 1}/${pendingScreenshots.length} selesai)`);
+            await new Promise(r => setTimeout(r, 1000));
+          }
         }
       }
       

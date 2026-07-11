@@ -5,8 +5,8 @@ export interface Product {
   canonical_name: string;
   sku: string;
   category: string;
-  cost_price: string | null;
-  retail_price: string | null;
+  cost_price: number | null;
+  retail_price: number | null;
   global_stock: number;
   created_at: string;
 }
@@ -34,31 +34,28 @@ export interface MatchResult {
 }
 
 export const catalogService = {
-  getProducts: async (token: string): Promise<Product[]> => {
+  getProducts: async (token: string) => {
     return apiClient.get('/api/catalog/products/', token);
   },
 
-  createProduct: async (token: string, data: Partial<Product>): Promise<Product> => {
-    return apiClient.post('/api/catalog/products/', data, token);
+  createProduct: async (token: string, productData: Partial<Product>) => {
+    return apiClient.post('/api/catalog/products/', productData, token);
   },
 
-  getProductAliases: async (token: string, productId: number): Promise<ProductAlias[]> => {
+  getProductAliases: async (token: string, productId: number) => {
     return apiClient.get(`/api/catalog/products/${productId}/aliases/`, token);
   },
 
-  matchProduct: async (token: string, rawName: string, platform: string): Promise<MatchResult> => {
-    return apiClient.post('/api/catalog/match/', {
-      raw_name: rawName,
-      platform
-    }, token);
+  matchProduct: async (token: string, raw_name: string, platform: string) => {
+    return apiClient.post('/api/catalog/match/', { raw_name, platform }, token);
   },
 
-  confirmMatch: async (token: string, rawName: string, platform: string, productId: number, isCorrection = false): Promise<any> => {
-    return apiClient.post('/api/catalog/match/confirm/', {
-      raw_name: rawName,
-      platform,
-      product_id: productId,
-      is_correction: isCorrection
+  confirmMatch: async (token: string, raw_name: string, platform: string, product_id: number, is_correction = false) => {
+    return apiClient.post('/api/catalog/match/confirm/', { 
+      raw_name, 
+      platform, 
+      product_id, 
+      is_correction 
     }, token);
   }
 };

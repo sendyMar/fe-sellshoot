@@ -1,78 +1,66 @@
 "use client";
 
-import { useState } from "react";
 import { useCatalog } from "@/hooks/useCatalog";
-import { ProductTable } from "./_components/ProductTable";
-import { ProductForm } from "./_components/ProductForm";
-import { AliasListDrawer } from "./_components/AliasListDrawer";
-import { Button } from "@/components/ui/button";
+import ProductTable from "./_components/ProductTable";
+import ProductForm from "./_components/ProductForm";
+import { useState } from "react";
 import { Plus } from "lucide-react";
-import { Product } from "@/services/catalog.service";
+import AliasListDrawer from "./_components/AliasListDrawer";
 
 export default function CatalogPage() {
-  const { products, isLoading, addProduct } = useCatalog();
+  const { products, isLoading, createProduct, fetchAliases } = useCatalog();
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [viewingAliasProduct, setViewingAliasProduct] = useState<Product | null>(null);
+  const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
 
-  const handleOpenForm = (product?: Product) => {
-    setEditingProduct(product || null);
-    setIsFormOpen(true);
-  };
-
-  const handleCloseForm = () => {
-    setIsFormOpen(false);
-    setEditingProduct(null);
-  };
-
-  const handleSubmitForm = async (data: Partial<Product>) => {
-    if (editingProduct) {
-      // TODO: Implement update product
-      console.log("Update not implemented yet", data);
-    } else {
-      await addProduct(data);
+  const handleAddProduct = async (data: any) => {
+    const res = await createProduct(data);
+    if (res.success) {
+      setIsFormOpen(false);
     }
-    handleCloseForm();
+  };
+
+  const handleViewAliases = (productId: number) => {
+    setSelectedProductId(productId);
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div className="p-6 max-w-6xl mx-auto space-y-6">
+      <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Katalog Produk</h1>
-          <p className="text-sm text-slate-500">
-            Kelola master data produk Anda. Sistem AI akan mencocokkan hasil ekstraksi pesanan dengan katalog ini.
-          </p>
+          <h1 className="text-2xl font-bold text-slate-800">Katalog Produk</h1>
+          <p className="text-slate-500">Kelola master data produk dan alias lintas platform.</p>
         </div>
-        
-        <Button 
-          onClick={() => handleOpenForm()} 
-          className="bg-indigo-600 hover:bg-indigo-700 text-white"
+        <button
+          onClick={() => setIsFormOpen(true)}
+          className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
         >
-          <Plus className="w-4 h-4 mr-2" />
-          Tambah Produk
-        </Button>
+          <Plus size={20} />
+          <span>Tambah Produk</span>
+        </button>
       </div>
 
-      <ProductTable 
-        products={products}
-        isLoading={isLoading}
-        onEdit={handleOpenForm}
-        onViewAliases={setViewingAliasProduct}
-      />
+      <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+        {isLoading ? (
+          <div className="p-12 text-center text-slate-500">Memuat katalog...</div>
+        ) : (
+          <ProductTable products={products} onViewAliases={handleViewAliases} />
+        )}
+      </div>
 
       <ProductForm 
-        isOpen={isFormOpen}
-        onClose={handleCloseForm}
-        onSubmit={handleSubmitForm}
-        initialData={editingProduct}
+        isOpen={isFormOpen} 
+        onClose={() => setIsFormOpen(false)} 
+        onSubmit={handleAddProduct} 
       />
 
-      <AliasListDrawer
-        isOpen={!!viewingAliasProduct}
-        product={viewingAliasProduct}
-        onClose={() => setViewingAliasProduct(null)}
-      />
+      {selectedProductId && (
+        <AliasListDrawer
+          productId={selectedProductId}
+          isOpen={!!selectedProductId}
+          onClose={() => setSelectedProductId(null)}
+          fetchAliases={() => fetchAliases(selectedProductId)}
+        />
+      )}
     </div>
   );
 }

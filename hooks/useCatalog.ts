@@ -1,61 +1,70 @@
-import { useState, useCallback, useEffect } from 'react';
-import { useAuth } from './useAuth';
-import { catalogService, Product, ProductAlias } from '../services/catalog.service';
-import { toast } from 'sonner';
+import { useState, useEffect, useCallback } from "react";
+import { useSession } from "next-auth/react";
+import { catalogService, Product, ProductAlias } from "@/services/catalog.service";
+import { toast } from "sonner";
 
 export function useCatalog() {
-  const { token } = useAuth();
-  
+  const { data: session } = useSession();
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchProducts = useCallback(async () => {
-    if (!token) return;
+    if (!session?.accessToken) return;
     setIsLoading(true);
     try {
-      const data = await catalogService.getProducts(token);
-      setProducts(data);
+      const res = await catalogService.getProducts(session.accessToken);
+      if (res.success) {
+        setProducts(res.data);
+      } else {
+        toast.error("Gagal memuat katalog produk");
+      }
     } catch (error) {
-      toast.error('Gagal mengambil data produk katalog');
-      console.error(error);
+      toast.error("Terjadi kesalahan saat memuat katalog");
     } finally {
       setIsLoading(false);
     }
-  }, [token]);
+  }, [session?.accessToken]);
 
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
 
-  const addProduct = async (data: Partial<Product>) => {
-    if (!token) return null;
+  const createProduct = async (data: Partial<Product>) => {
+    if (!session?.accessToken) return { success: false };
     try {
-      const newProduct = await catalogService.createProduct(token, data);
-      setProducts(prev => [newProduct, ...prev]);
-      toast.success('Produk berhasil ditambahkan ke katalog');
-      return newProduct;
+      const res = await catalogService.createProduct(session.accessToken, data);
+      if (res.success) {
+        toast.success("Produk berhasil ditambahkan");
+        fetchProducts(); // Refresh list
+        return { success: true, data: res.data };
+      } else {
+        toast.error("Gagal menambahkan produk");
+        return { success: false };
+      }
     } catch (error) {
-      toast.error('Gagal menambahkan produk');
-      console.error(error);
-      return null;
+      toast.error("Terjadi kesalahan saat menambahkan produk");
+      return { success: false };
     }
   };
 
-  const getAliases = async (productId: number) => {
-    if (!token) return [];
+  const fetchAliases = async (productId: number) => {
+    if (!session?.accessToken) return [];
     try {
-      return await catalogService.getProductAliases(token, productId);
+      const res = await catalogService.getProductAliases(session.accessToken, productId);
+      if (res.success) {
+        return res.data as ProductAlias[];
+      }
     } catch (error) {
-      console.error(error);
-      return [];
+      toast.error("Gagal memuat alias produk");
     }
+    return [];
   };
 
   return {
     products,
     isLoading,
     fetchProducts,
-    addProduct,
-    getAliases
+    createProduct,
+    fetchAliases
   };
 }

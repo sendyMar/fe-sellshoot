@@ -1,141 +1,102 @@
 "use client";
 
 import { useState } from "react";
-import { Product } from "@/services/catalog.service";
-import { X, Save, Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { X } from "lucide-react";
 
 interface ProductFormProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: Partial<Product>) => Promise<void>;
-  initialData?: Product | null;
+  onSubmit: (data: any) => void;
 }
 
-export function ProductForm({ isOpen, onClose, onSubmit, initialData }: ProductFormProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formData, setFormData] = useState<Partial<Product>>(
-    initialData || {
-      canonical_name: "",
-      sku: "",
-      category: "",
-      cost_price: "",
-      retail_price: "",
-      global_stock: 0,
-    }
-  );
+export default function ProductForm({ isOpen, onClose, onSubmit }: ProductFormProps) {
+  const [formData, setFormData] = useState({
+    canonical_name: "",
+    sku: "",
+    category: "",
+    global_stock: 0
+  });
 
   if (!isOpen) return null;
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    await onSubmit(formData);
-    setIsSubmitting(false);
+    onSubmit(formData);
+    setFormData({ canonical_name: "", sku: "", category: "", global_stock: 0 }); // reset
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
-          <h2 className="text-lg font-semibold text-slate-900">
-            {initialData ? "Edit Produk" : "Tambah Produk Baru"}
-          </h2>
-          <button 
-            onClick={onClose}
-            className="p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 rounded-lg transition-colors"
-          >
-            <X className="h-5 w-5" />
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden">
+        <div className="flex justify-between items-center p-5 border-b border-slate-100">
+          <h2 className="text-lg font-bold text-slate-800">Tambah Produk Baru</h2>
+          <button onClick={onClose} className="text-slate-400 hover:text-slate-600">
+            <X size={20} />
           </button>
         </div>
         
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-5 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
-              Nama Produk Master (Wajib)
-            </label>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Nama Kanonikal *</label>
+            <input
+              required
+              type="text"
+              placeholder="Contoh: Sepatu Sneaker Pria Premium"
+              className="w-full p-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={formData.canonical_name}
+              onChange={(e) => setFormData({ ...formData, canonical_name: e.target.value })}
+            />
+            <p className="text-xs text-slate-500 mt-1">Nama resmi yang akan jadi acuan utama.</p>
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">SKU</label>
             <input
               type="text"
-              required
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
-              placeholder="Contoh: Sepatu Sneakers Pria"
-              value={formData.canonical_name || ""}
-              onChange={(e) => setFormData({...formData, canonical_name: e.target.value})}
+              placeholder="Contoh: SP-SNK-01"
+              className="w-full p-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={formData.sku}
+              onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">SKU</label>
-              <input
-                type="text"
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
-                placeholder="SKU-123"
-                value={formData.sku || ""}
-                onChange={(e) => setFormData({...formData, sku: e.target.value})}
-              />
-            </div>
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">Kategori</label>
               <input
                 type="text"
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                 placeholder="Sepatu"
-                value={formData.category || ""}
-                onChange={(e) => setFormData({...formData, category: e.target.value})}
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Harga Modal</label>
-              <input
-                type="number"
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
-                placeholder="100000"
-                value={formData.cost_price || ""}
-                onChange={(e) => setFormData({...formData, cost_price: e.target.value})}
+                className="w-full p-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={formData.category}
+                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Harga Jual</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Stok Awal</label>
               <input
                 type="number"
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
-                placeholder="150000"
-                value={formData.retail_price || ""}
-                onChange={(e) => setFormData({...formData, retail_price: e.target.value})}
+                min="0"
+                className="w-full p-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={formData.global_stock}
+                onChange={(e) => setFormData({ ...formData, global_stock: parseInt(e.target.value) || 0 })}
               />
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Stok Global</label>
-            <input
-              type="number"
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
-              placeholder="0"
-              value={formData.global_stock || 0}
-              onChange={(e) => setFormData({...formData, global_stock: parseInt(e.target.value) || 0})}
-            />
-          </div>
-
-          <div className="pt-4 flex justify-end gap-3 border-t border-slate-100">
-            <Button type="button" variant="outline" onClick={onClose}>Batal</Button>
-            <Button type="submit" className="bg-indigo-600 hover:bg-indigo-700 text-white" disabled={isSubmitting}>
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Menyimpan...
-                </>
-              ) : (
-                <>
-                  <Save className="w-4 h-4 mr-2" />
-                  Simpan Produk
-                </>
-              )}
-            </Button>
+          <div className="pt-4 flex justify-end gap-3">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 text-slate-600 font-medium hover:bg-slate-100 rounded-lg transition"
+            >
+              Batal
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition"
+            >
+              Simpan Produk
+            </button>
           </div>
         </form>
       </div>
