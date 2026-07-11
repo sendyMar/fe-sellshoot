@@ -25,6 +25,10 @@ export function useExtraction() {
   useEffect(() => {
     if (isAuthenticated && token) {
       fetchScreenshots();
+      
+      const handleRefresh = () => fetchScreenshots();
+      window.addEventListener('refresh_screenshots', handleRefresh);
+      return () => window.removeEventListener('refresh_screenshots', handleRefresh);
     }
   }, [isAuthenticated, token, fetchScreenshots]);
 
@@ -38,6 +42,7 @@ export function useExtraction() {
       });
       if (res.success) {
         await fetchScreenshots();
+        window.dispatchEvent(new Event('refresh_screenshots'));
         return true;
       }
       return false;

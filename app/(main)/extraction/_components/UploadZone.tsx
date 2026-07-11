@@ -5,6 +5,7 @@ import { UploadDropzone } from "@/utils/uploadthing";
 import { useExtraction } from "@/hooks/useExtraction";
 import { v4 as uuidv4 } from "uuid";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 export function UploadZone() {
   const [platform, setPlatform] = useState<string>("shopee");
@@ -62,8 +63,11 @@ export function UploadZone() {
               const sessionId = uuidv4();
               
               const success = await saveUploadedScreenshots(urls, platform, sessionId);
-              if (!success) {
+              if (success) {
+                toast.success(`${urls.length} gambar berhasil diupload`);
+              } else {
                 setErrorMsg("Gagal menyimpan data ke backend. Silakan coba lagi.");
+                toast.error("Gagal menyimpan gambar");
               }
               setIsSaving(false);
             }
