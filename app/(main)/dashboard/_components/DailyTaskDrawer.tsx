@@ -70,7 +70,7 @@ export default function DailyTaskDrawer({ date, isOpen, onClose, isReadOnly }: D
 
         {/* Content Area */}
         <div className="flex-1 overflow-y-auto p-6 relative">
-          {activeTab === 'ekstraksi' && <ExtractionTab date={date} isReadOnly={isReadOnly} />}
+          {activeTab === 'ekstraksi' && <ExtractionTab date={date} isReadOnly={isReadOnly} onNavigateToTasks={() => setActiveTab('task')} />}
           {activeTab === 'task' && <TaskTab date={date} />}
           {activeTab === 'report' && <ReportTab date={date} />}
         </div>

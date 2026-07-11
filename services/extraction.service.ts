@@ -17,7 +17,7 @@ export const extractionService = {
   async getTodayScreenshots(token: string): Promise<{ success: boolean; data: ScreenshotResponse[] }> {
     return apiClient.get('/api/extraction/screenshots/', token);
   },
-  
+
   async deleteScreenshot(token: string, id: number) {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
@@ -36,5 +36,14 @@ export const extractionService = {
 
   async getExtractionToday(token: string): Promise<{ success: boolean; data: any[] }> {
     return apiClient.get('/api/extraction/today/', token);
+  },
+
+  async getExtractionReview(token: string, date?: string): Promise<{ success: boolean; data: any }> {
+    const url = date ? `/api/extraction/review/?date=${date}` : '/api/extraction/review/';
+    return apiClient.get(url, token);
+  },
+
+  async verifyExtractionBatch(token: string, data: { item_ids: number[], corrections: any[] }): Promise<{ success: boolean; message: string }> {
+    return apiClient.post('/api/extraction/review/verify/', data, token);
   }
 };
