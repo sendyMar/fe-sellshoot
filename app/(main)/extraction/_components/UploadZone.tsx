@@ -6,6 +6,7 @@ import { useExtraction } from "@/hooks/useExtraction";
 import { v4 as uuidv4 } from "uuid";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import imageCompression from "browser-image-compression";
 
 export function UploadZone() {
   const [platform, setPlatform] = useState<string>("shopee");
@@ -19,6 +20,32 @@ export function UploadZone() {
     { id: "instagram", name: "Instagram" },
     { id: "other", name: "Lainnya" },
   ];
+
+  const handleBeforeUpload = async (files: File[]) => {
+    setIsSaving(true);
+    toast.info("Mengompresi gambar untuk menghemat kuota AI...");
+    
+    const compressedFiles = await Promise.all(
+      files.map(async (file) => {
+        const options = {
+          maxSizeMB: 1,
+          maxWidthOrHeight: 1280,
+          useWebWorker: true,
+        };
+        try {
+          const compressedFile = await imageCompression(file, options);
+          return new File([compressedFile], file.name, { type: file.type });
+        } catch (error) {
+          console.error("Gagal kompresi file:", error);
+          return file; // Kembalikan file asli jika kompresi gagal
+        }
+      })
+    );
+    
+    // Matikan indikator saving untuk membiarkan UploadDropzone menunjukkan progress aslinya
+    setIsSaving(false); 
+    return compressedFiles;
+  };
 
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -50,11 +77,12 @@ export function UploadZone() {
       {isSaving ? (
         <div className="flex h-64 flex-col items-center justify-center rounded-xl border border-dashed border-slate-300 bg-slate-50">
           <Loader2 className="mb-4 h-8 w-8 animate-spin text-violet-600" />
-          <p className="text-sm text-slate-500">Menyimpan data ke sistem...</p>
+          <p className="text-sm text-slate-500">Mempersiapkan gambar...</p>
         </div>
       ) : (
         <UploadDropzone
           endpoint="screenshotUploader"
+          onBeforeUploadBegin={handleBeforeUpload}
           onClientUploadComplete={async (res) => {
             if (res && res.length > 0) {
               setIsSaving(true);

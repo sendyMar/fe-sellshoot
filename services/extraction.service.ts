@@ -28,5 +28,13 @@ export const extractionService = {
       headers,
     });
     return res.json();
+  },
+
+  async processScreenshots(token: string, screenshotIds?: number[]) {
+    return apiClient.post('/api/extraction/process/', { screenshot_ids: screenshotIds }, token);
+  },
+
+  async getExtractionToday(token: string): Promise<{ success: boolean; data: any[] }> {
+    return apiClient.get('/api/extraction/today/', token);
   }
 };

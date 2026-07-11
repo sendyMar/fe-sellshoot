@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from './useAuth';
 import { extractionService, ScreenshotResponse } from '../services/extraction.service';
@@ -5,7 +7,9 @@ import { extractionService, ScreenshotResponse } from '../services/extraction.se
 export function useExtraction() {
   const { token, isAuthenticated } = useAuth();
   const [screenshots, setScreenshots] = useState<ScreenshotResponse[]>([]);
+  const [results, setResults] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const fetchScreenshots = useCallback(async () => {
     if (!token) return;
@@ -22,11 +26,27 @@ export function useExtraction() {
     }
   }, [token]);
 
+  const fetchResults = useCallback(async () => {
+    if (!token) return;
+    try {
+      const res = await extractionService.getExtractionToday(token);
+      if (res.success) {
+        setResults(res.data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch extraction results", error);
+    }
+  }, [token]);
+
   useEffect(() => {
     if (isAuthenticated && token) {
       fetchScreenshots();
+      fetchResults();
       
-      const handleRefresh = () => fetchScreenshots();
+      const handleRefresh = () => {
+        fetchScreenshots();
+        fetchResults();
+      };
       window.addEventListener('refresh_screenshots', handleRefresh);
       return () => window.removeEventListener('refresh_screenshots', handleRefresh);
     }
@@ -67,11 +87,58 @@ export function useExtraction() {
     }
   };
 
+  const [processingProgress, setProcessingProgress] = useState<string>("");
+
+  const processAllPending = async () => {
+    if (!token) return false;
+    
+    const pendingScreenshots = screenshots.filter(s => s.status === 'pending');
+    if (pendingScreenshots.length === 0) return true;
+
+    setIsProcessing(true);
+    let allSuccess = true;
+
+    try {
+      for (let i = 0; i < pendingScreenshots.length; i++) {
+        const ss = pendingScreenshots[i];
+        setProcessingProgress(`Memproses ${i + 1} dari ${pendingScreenshots.length}...`);
+        
+        const res = await extractionService.processScreenshots(token, [ss.id]);
+        if (!res.success) {
+          allSuccess = false;
+        }
+
+        // Fetch updates for UI after each item
+        await fetchScreenshots();
+        await fetchResults();
+
+        // Delay 5 detik sebelum request berikutnya (hanya jika masih ada antrean berikutnya)
+        if (i < pendingScreenshots.length - 1) {
+          setProcessingProgress(`Menunggu jeda aman API (5s)... (${i + 1}/${pendingScreenshots.length})`);
+          await new Promise(r => setTimeout(r, 5000));
+        }
+      }
+      
+      return allSuccess;
+    } catch (error) {
+      console.error("Failed to process screenshots", error);
+      return false;
+    } finally {
+      setIsProcessing(false);
+      setProcessingProgress("");
+    }
+  };
+
   return {
     screenshots,
+    results,
     isLoading,
+    isProcessing,
+    processingProgress,
     fetchScreenshots,
+    fetchResults,
     saveUploadedScreenshots,
-    deleteScreenshot
+    deleteScreenshot,
+    processAllPending
   };
 }
