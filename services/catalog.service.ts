@@ -42,6 +42,10 @@ export const catalogService = {
     return apiClient.post('/api/catalog/products/', productData, token);
   },
 
+  deleteProduct: async (token: string, productId: number) => {
+    return apiClient.delete(`/api/catalog/products/${productId}/`, token);
+  },
+
   getProductAliases: async (token: string, productId: number) => {
     return apiClient.get(`/api/catalog/products/${productId}/aliases/`, token);
   },

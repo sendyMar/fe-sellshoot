@@ -8,7 +8,7 @@ import { Plus } from "lucide-react";
 import AliasListDrawer from "./_components/AliasListDrawer";
 
 export default function CatalogPage() {
-  const { products, isLoading, createProduct, fetchAliases } = useCatalog();
+  const { products, isLoading, createProduct, fetchAliases, deleteProduct } = useCatalog();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
 
@@ -43,7 +43,11 @@ export default function CatalogPage() {
         {isLoading ? (
           <div className="p-12 text-center text-slate-500">Memuat katalog...</div>
         ) : (
-          <ProductTable products={products} onViewAliases={handleViewAliases} />
+          <ProductTable 
+            products={products} 
+            onViewAliases={handleViewAliases} 
+            onDeleteProduct={deleteProduct}
+          />
         )}
       </div>
 

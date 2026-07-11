@@ -6,9 +6,10 @@ import { Layers } from "lucide-react";
 interface ProductTableProps {
   products: Product[];
   onViewAliases: (id: number) => void;
+  onDeleteProduct?: (id: number) => void;
 }
 
-export default function ProductTable({ products, onViewAliases }: ProductTableProps) {
+export default function ProductTable({ products, onViewAliases, onDeleteProduct }: ProductTableProps) {
   if (products.length === 0) {
     return (
       <div className="p-12 text-center text-slate-500">
@@ -37,13 +38,25 @@ export default function ProductTable({ products, onViewAliases }: ProductTablePr
               <td className="p-4 text-slate-500">{p.category || "-"}</td>
               <td className="p-4 text-slate-500">{p.global_stock}</td>
               <td className="p-4 text-right">
-                <button
-                  onClick={() => onViewAliases(p.id)}
-                  className="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 font-medium"
-                >
-                  <Layers size={16} />
-                  Lihat Alias
-                </button>
+                <div className="flex justify-end gap-3">
+                  <button
+                    onClick={() => onViewAliases(p.id)}
+                    className="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 font-medium"
+                  >
+                    <Layers size={16} />
+                    Alias
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (confirm(`Apakah Anda yakin ingin menghapus produk "${p.canonical_name}"?`)) {
+                        onDeleteProduct?.(p.id);
+                      }
+                    }}
+                    className="inline-flex items-center gap-1.5 text-sm text-red-500 hover:text-red-700 font-medium"
+                  >
+                    Hapus
+                  </button>
+                </div>
               </td>
             </tr>
           ))}

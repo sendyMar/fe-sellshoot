@@ -13,10 +13,11 @@ export function useCatalog() {
     setIsLoading(true);
     try {
       const res = await catalogService.getProducts(session.accessToken);
-      if (res.success) {
-        setProducts(res.data);
+      // Django REST Framework's ListAPIView returns an array directly
+      if (Array.isArray(res)) {
+        setProducts(res);
       } else {
-        toast.error("Gagal memuat katalog produk");
+        toast.error("Format data katalog tidak sesuai");
       }
     } catch (error) {
       toast.error("Terjadi kesalahan saat memuat katalog");
@@ -33,12 +34,13 @@ export function useCatalog() {
     if (!session?.accessToken) return { success: false };
     try {
       const res = await catalogService.createProduct(session.accessToken, data);
-      if (res.success) {
+      // Django returns the created object with an 'id' on success
+      if (res && res.id) {
         toast.success("Produk berhasil ditambahkan");
         fetchProducts(); // Refresh list
-        return { success: true, data: res.data };
+        return { success: true, data: res };
       } else {
-        toast.error("Gagal menambahkan produk");
+        toast.error("Gagal menambahkan produk: " + JSON.stringify(res));
         return { success: false };
       }
     } catch (error) {
@@ -51,8 +53,9 @@ export function useCatalog() {
     if (!session?.accessToken) return [];
     try {
       const res = await catalogService.getProductAliases(session.accessToken, productId);
-      if (res.success) {
-        return res.data as ProductAlias[];
+      // Django returns an array directly
+      if (Array.isArray(res)) {
+        return res as ProductAlias[];
       }
     } catch (error) {
       toast.error("Gagal memuat alias produk");
@@ -60,11 +63,25 @@ export function useCatalog() {
     return [];
   };
 
+  const deleteProduct = async (productId: number) => {
+    if (!session?.accessToken) return { success: false };
+    try {
+      await catalogService.deleteProduct(session.accessToken, productId);
+      toast.success("Produk berhasil dihapus");
+      fetchProducts(); // Refresh list
+      return { success: true };
+    } catch (error) {
+      toast.error("Terjadi kesalahan saat menghapus produk");
+      return { success: false };
+    }
+  };
+
   return {
     products,
     isLoading,
     fetchProducts,
     createProduct,
+    deleteProduct,
     fetchAliases
   };
 }
