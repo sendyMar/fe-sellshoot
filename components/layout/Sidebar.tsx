@@ -13,10 +13,7 @@ import {
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/extraction", label: "Ekstraksi", icon: ScanSearch },
-  { href: "/tasks", label: "Tasks", icon: ListChecks },
   { href: "/catalog", label: "Katalog", icon: Package },
-  { href: "/reports", label: "Laporan", icon: BarChart3 },
 ];
 
 export default function Sidebar() {
