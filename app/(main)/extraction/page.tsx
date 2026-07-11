@@ -19,11 +19,11 @@ export default function ExtractionPage() {
       return;
     }
 
-    const success = await processAllPending();
-    if (success) {
+    const result = await processAllPending();
+    if (result.success) {
       toast.success("Pemrosesan AI selesai!");
     } else {
-      toast.error("Ada masalah saat memproses sebagian screenshot.");
+      toast.error(result.error || "Ada masalah saat memproses sebagian screenshot.");
     }
   };
 

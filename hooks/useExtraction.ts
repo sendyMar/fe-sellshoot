@@ -90,13 +90,14 @@ export function useExtraction() {
   const [processingProgress, setProcessingProgress] = useState<string>("");
 
   const processAllPending = async () => {
-    if (!token) return false;
+    if (!token) return { success: false, error: "Tidak ada akses token" };
     
     const pendingScreenshots = screenshots.filter(s => s.status === 'pending');
-    if (pendingScreenshots.length === 0) return true;
+    if (pendingScreenshots.length === 0) return { success: true };
 
     setIsProcessing(true);
     let allSuccess = true;
+    let errorMessage = "";
 
     try {
       for (let i = 0; i < pendingScreenshots.length; i++) {
@@ -106,6 +107,18 @@ export function useExtraction() {
         const res = await extractionService.processScreenshots(token, [ss.id]);
         if (!res.success) {
           allSuccess = false;
+          errorMessage = "Gagal menghubungi server.";
+          break;
+        } else if (res.data?.failed?.length > 0) {
+          allSuccess = false;
+          const aiError = res.data.failed[0].error || "";
+          if (aiError.includes("429") || aiError.includes("Quota") || aiError.includes("Exhausted") || aiError.includes("RESOURCE_EXHAUSTED")) {
+            errorMessage = "Batas token/kuota API Google Gemini Anda telah habis (429 Quota Exceeded). Silakan gunakan API Key yang berbeda.";
+          } else {
+            errorMessage = `AI Error: ${aiError.substring(0, 100)}...`;
+          }
+          // Stop processing if we hit quota limits or other major errors
+          break;
         }
 
         // Fetch updates for UI after each item
@@ -119,13 +132,14 @@ export function useExtraction() {
         }
       }
       
-      return allSuccess;
-    } catch (error) {
+      return { success: allSuccess, error: errorMessage };
+    } catch (error: any) {
       console.error("Failed to process screenshots", error);
-      return false;
+      return { success: false, error: error?.message || "Terjadi kesalahan internal" };
     } finally {
       setIsProcessing(false);
       setProcessingProgress("");
+      await fetchScreenshots();
     }
   };
 
