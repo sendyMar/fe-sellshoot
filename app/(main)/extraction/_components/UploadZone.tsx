@@ -87,7 +87,7 @@ export function UploadZone() {
             if (res && res.length > 0) {
               setIsSaving(true);
               setErrorMsg("");
-              const urls = res.map((file) => file.url);
+              const urls = res.map((file) => file.ufsUrl || file.url);
               const sessionId = uuidv4();
               
               const success = await saveUploadedScreenshots(urls, platform, sessionId);

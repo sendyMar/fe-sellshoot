@@ -6,8 +6,9 @@ const f = createUploadthing();
 
 const auth = async (req: NextRequest) => {
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+  console.log("Uploadthing getToken:", JSON.stringify(token));
   if (!token) throw new UploadThingError("Unauthorized");
-  return { id: token.user?.id };
+  return { id: (token as any).user?.id || (token as any).sub };
 };
 
 export const ourFileRouter = {
