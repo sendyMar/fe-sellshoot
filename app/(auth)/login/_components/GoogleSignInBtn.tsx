@@ -15,10 +15,10 @@ export function GoogleSignInBtn() {
     <button
       onClick={handleSignIn}
       disabled={isLoading}
-      className="flex w-full items-center justify-center gap-3 rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-zinc-200 transition-all duration-200 hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed"
+      className="flex w-full items-center justify-center gap-3 rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 transition-all duration-200 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
     >
       {isLoading ? (
-        <span className="h-5 w-5 animate-spin rounded-full border-b-2 border-white"></span>
+        <span className="h-5 w-5 animate-spin rounded-full border-b-2 border-slate-600"></span>
       ) : (
         <svg className="h-5 w-5" viewBox="0 0 24 24">
           <path

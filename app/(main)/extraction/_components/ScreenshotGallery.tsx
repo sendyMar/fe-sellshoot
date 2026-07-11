@@ -24,51 +24,51 @@ export function ScreenshotGallery() {
       case 'shopee': return "bg-[#EE4D2D]/10 text-[#EE4D2D] border-[#EE4D2D]/20";
       case 'tokopedia': return "bg-[#03AC0E]/10 text-[#03AC0E] border-[#03AC0E]/20";
       case 'instagram': return "bg-[#E1306C]/10 text-[#E1306C] border-[#E1306C]/20";
-      default: return "bg-zinc-500/10 text-zinc-400 border-zinc-500/20";
+      default: return "bg-slate-100 text-slate-500 border-slate-200";
     }
   };
 
   if (isLoading && screenshots.length === 0) {
     return (
-      <div className="flex h-64 items-center justify-center rounded-xl border border-white/10 bg-zinc-900">
-        <Loader2 className="h-8 w-8 animate-spin text-zinc-500" />
+      <div className="flex h-64 items-center justify-center rounded-xl border border-slate-200 bg-white">
+        <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
       </div>
     );
   }
 
   return (
-    <div className="rounded-xl border border-white/10 bg-zinc-900 p-6 shadow-xl">
+    <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
       <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-lg font-bold text-white">Screenshot Hari Ini</h2>
-        <span className="rounded-full bg-zinc-800 px-3 py-1 text-xs font-medium text-zinc-300">
+        <h2 className="text-lg font-bold text-slate-900">Screenshot Hari Ini</h2>
+        <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">
           {screenshots.length} Item
         </span>
       </div>
 
       {screenshots.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-white/10 py-12">
-          <div className="mb-3 rounded-full bg-zinc-800/50 p-4">
-            <ImageIcon className="h-8 w-8 text-zinc-500" />
+        <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-slate-200 py-12">
+          <div className="mb-3 rounded-full bg-slate-50 p-4">
+            <ImageIcon className="h-8 w-8 text-slate-400" />
           </div>
-          <p className="text-sm font-medium text-zinc-300">Belum ada screenshot</p>
-          <p className="mt-1 text-xs text-zinc-500">Mulai unggah di area upload</p>
+          <p className="text-sm font-medium text-slate-500">Belum ada screenshot</p>
+          <p className="mt-1 text-xs text-slate-400">Mulai unggah di area upload</p>
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           {screenshots.map((item) => (
-            <div key={item.id} className="group relative overflow-hidden rounded-xl border border-white/10 bg-zinc-950 transition-all hover:border-white/20">
+            <div key={item.id} className="group relative overflow-hidden rounded-xl border border-slate-200 bg-white transition-all hover:border-slate-300 shadow-sm">
               {/* Image Preview */}
-              <div className="aspect-[3/4] w-full overflow-hidden bg-zinc-900">
+              <div className="aspect-[3/4] w-full overflow-hidden bg-slate-100">
                 <img 
                   src={item.image_url} 
                   alt={`Screenshot ${item.id}`}
-                  className="h-full w-full object-cover opacity-80 transition-transform duration-300 group-hover:scale-105 group-hover:opacity-100"
+                  className="h-full w-full object-cover opacity-90 transition-transform duration-300 group-hover:scale-105 group-hover:opacity-100"
                   loading="lazy"
                 />
               </div>
               
               {/* Overlay Actions */}
-              <div className="absolute inset-x-0 top-0 flex justify-between bg-gradient-to-b from-black/80 to-transparent p-3 opacity-0 transition-opacity group-hover:opacity-100">
+              <div className="absolute inset-x-0 top-0 flex justify-between bg-gradient-to-b from-black/50 to-transparent p-3 opacity-0 transition-opacity group-hover:opacity-100">
                 <span className={`rounded-md border px-2 py-1 text-[10px] font-bold uppercase tracking-wider ${getPlatformColors(item.platform)}`}>
                   {item.platform}
                 </span>
@@ -82,10 +82,10 @@ export function ScreenshotGallery() {
               </div>
 
               {/* Bottom Info */}
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black via-black/80 to-transparent p-3 pt-8">
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-3 pt-8">
                 <div className="flex items-center justify-between">
                   {getStatusBadge(item.status)}
-                  <span className="text-[10px] text-zinc-400">
+                  <span className="text-[10px] text-white">
                     {format(new Date(item.uploaded_at), 'HH:mm', { locale: id })}
                   </span>
                 </div>

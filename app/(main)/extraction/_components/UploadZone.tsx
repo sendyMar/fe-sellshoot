@@ -21,17 +21,17 @@ export function UploadZone() {
   ];
 
   return (
-    <div className="rounded-xl border border-white/10 bg-zinc-900 p-6 shadow-xl">
+    <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-bold text-white">Upload Screenshot</h2>
-          <p className="text-sm text-zinc-400">Pilih platform dan unggah gambar (maks. 5 gambar/sesi)</p>
+          <h2 className="text-lg font-bold text-slate-900">Upload Screenshot</h2>
+          <p className="text-sm text-slate-500">Pilih platform dan unggah gambar (maks. 5 gambar/sesi)</p>
         </div>
         
         <select
           value={platform}
           onChange={(e) => setPlatform(e.target.value)}
-          className="rounded-lg border border-white/10 bg-zinc-950 px-4 py-2 text-sm text-white outline-none focus:border-violet-500"
+          className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 outline-none focus:border-violet-500 shadow-sm"
         >
           {platforms.map((p) => (
             <option key={p.id} value={p.id}>
@@ -42,15 +42,15 @@ export function UploadZone() {
       </div>
 
       {errorMsg && (
-        <div className="mb-4 rounded-lg bg-red-500/10 p-3 text-sm text-red-400 border border-red-500/20">
+        <div className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-600 border border-red-200">
           {errorMsg}
         </div>
       )}
 
       {isSaving ? (
-        <div className="flex h-64 flex-col items-center justify-center rounded-xl border border-dashed border-white/10 bg-zinc-950/50">
-          <Loader2 className="mb-4 h-8 w-8 animate-spin text-violet-500" />
-          <p className="text-sm text-zinc-400">Menyimpan data ke sistem...</p>
+        <div className="flex h-64 flex-col items-center justify-center rounded-xl border border-dashed border-slate-300 bg-slate-50">
+          <Loader2 className="mb-4 h-8 w-8 animate-spin text-violet-600" />
+          <p className="text-sm text-slate-500">Menyimpan data ke sistem...</p>
         </div>
       ) : (
         <UploadDropzone
@@ -76,11 +76,11 @@ export function UploadZone() {
             setErrorMsg(`Upload Error: ${error.message}`);
           }}
           appearance={{
-            container: "rounded-xl border-dashed border-white/20 bg-zinc-950/50 p-10 transition-colors hover:border-violet-500/50 hover:bg-zinc-950/80",
+            container: "rounded-xl border-dashed border-slate-300 bg-slate-50 p-10 transition-colors hover:border-violet-500/50 hover:bg-slate-100",
             button: "bg-violet-600 hover:bg-violet-700 text-white rounded-lg px-6 py-2 ut-uploading:bg-violet-600/50 after:bg-violet-500",
-            label: "text-violet-400 font-medium hover:text-violet-300",
-            allowedContent: "text-zinc-500 mt-2",
-            uploadIcon: "text-zinc-400",
+            label: "text-violet-600 font-medium hover:text-violet-700",
+            allowedContent: "text-slate-500 mt-2",
+            uploadIcon: "text-slate-400",
           }}
         />
       )}

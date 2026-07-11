@@ -8,15 +8,15 @@ export default function Header() {
   const { user } = useAuth();
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-white/10 bg-zinc-950/80 px-6 backdrop-blur-xl">
+    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-slate-200 bg-white/80 px-6 backdrop-blur-xl">
       {/* Search */}
       <div className="flex items-center gap-3">
-        <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-zinc-400 transition-colors focus-within:border-violet-500/50">
+        <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-500 transition-colors focus-within:border-violet-500/50">
           <Search className="h-4 w-4" />
           <input
             type="text"
             placeholder="Cari produk, task..."
-            className="w-48 bg-transparent text-zinc-200 placeholder-zinc-500 outline-none"
+            className="w-48 bg-transparent text-slate-900 placeholder-slate-400 outline-none"
           />
         </div>
       </div>
@@ -24,9 +24,9 @@ export default function Header() {
       {/* Right Section */}
       <div className="flex items-center gap-4">
         {/* Notification Bell */}
-        <button className="relative rounded-lg p-2 text-zinc-400 transition-colors hover:bg-white/5 hover:text-zinc-200">
+        <button className="relative rounded-lg p-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900">
           <Bell className="h-5 w-5" />
-          <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-violet-500" />
+          <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-violet-600" />
         </button>
 
         {/* User Avatar */}
@@ -40,13 +40,13 @@ export default function Header() {
           )}
           
           <div className="hidden sm:block">
-            <p className="text-sm font-medium text-zinc-200">{user?.name || "User"}</p>
-            <p className="text-xs text-zinc-500">seller</p>
+            <p className="text-sm font-medium text-slate-900">{user?.name || "User"}</p>
+            <p className="text-xs text-slate-500">seller</p>
           </div>
 
           <button 
             onClick={() => signOut()}
-            className="ml-2 rounded-lg p-2 text-zinc-400 transition-colors hover:bg-white/5 hover:text-red-400"
+            className="ml-2 rounded-lg p-2 text-slate-500 transition-colors hover:bg-red-50 hover:text-red-600"
             title="Keluar"
           >
             <LogOut className="h-5 w-5" />
