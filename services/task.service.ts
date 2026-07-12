@@ -26,5 +26,9 @@ export const taskService = {
       payload.description = description;
     }
     return apiClient.patch(`/api/tasks/${id}/`, payload, token);
+  },
+
+  async createCustomTaskTemplate(token: string, data: any): Promise<{ success: boolean; message?: string }> {
+    return apiClient.post('/api/tasks/custom-template/', data, token);
   }
 };

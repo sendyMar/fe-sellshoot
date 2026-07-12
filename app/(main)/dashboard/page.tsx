@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight, Lock, CheckCircle2, XCircle } from "lucide-r
 import { useState } from "react";
 import DailyTaskDrawer from "./_components/DailyTaskDrawer";
 import ModalAlert from "./_components/ModalAlert";
+import CustomTaskModal from "./_components/CustomTaskModal";
 
 const DAYS_OF_WEEK = ["Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min"];
 
@@ -14,6 +15,7 @@ export default function DashboardPage() {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCustomTaskModalOpen, setIsCustomTaskModalOpen] = useState(false);
 
   const handleDayClick = (day: any) => {
     if (day.status === "future") return;
@@ -84,10 +86,18 @@ export default function DashboardPage() {
 
   return (
     <div className="p-6 max-w-7xl mx-auto space-y-6">
-      <div className="flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-800">Operational Calendar</h1>
-          <p className="text-slate-500">Pusat komando harian Anda.</p>
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+        <div className="flex items-center gap-4">
+          <button 
+            onClick={() => setIsCustomTaskModalOpen(true)}
+            className="px-3 py-2 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 rounded-xl text-sm font-bold transition-colors border border-indigo-200 flex-shrink-0"
+          >
+            + Custom Task
+          </button>
+          <div>
+            <h1 className="text-2xl font-bold text-slate-800">Operational Calendar</h1>
+            <p className="text-slate-500">Pusat komando harian Anda.</p>
+          </div>
         </div>
         
         <div className="flex items-center gap-4 bg-slate-50 p-2 rounded-xl border border-slate-100">
@@ -145,6 +155,11 @@ export default function DashboardPage() {
           message="Task anda terlewat nih, jangan lupa rutin laporan untuk meningkatkan performa penjualan harianmu!"
         />
       )}
+
+      <CustomTaskModal 
+        isOpen={isCustomTaskModalOpen} 
+        onClose={() => setIsCustomTaskModalOpen(false)} 
+      />
     </div>
   );
 }
