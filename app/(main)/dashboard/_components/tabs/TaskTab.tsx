@@ -9,17 +9,31 @@ import {
   MessageCircle, 
   ShoppingCart, 
   ListTodo,
-  AlertCircle
+  AlertCircle,
+  Sparkles,
+  Loader2
 } from "lucide-react";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
+import { toast } from "sonner";
+import TaskChecklist from "./TaskChecklist";
 
 interface TaskTabProps {
   date: string;
 }
 
 export default function TaskTab({ date }: TaskTabProps) {
-  const { tasks, isLoading, toggleTaskStatus } = useTasks(date);
+  const { tasks, isLoading, isGenerating, generateTasks, toggleTaskStatus, updateTaskDescription } = useTasks(date);
+
+  const handleGenerateTasks = async () => {
+    toast.info("AI sedang menganalisis data dan menyusun task... (Proses ini bisa memakan waktu hingga 1 menit)");
+    const res = await generateTasks();
+    if (res?.success) {
+      toast.success("Berhasil menyusun daftar tugas!");
+    } else {
+      toast.error(res?.message || "Gagal membuat tugas. Pastikan Anda sudah mengupload dan memproses screenshot hari ini.");
+    }
+  };
 
   const getCategoryIcon = (category: string) => {
     switch (category) {
@@ -71,6 +85,19 @@ export default function TaskTab({ date }: TaskTabProps) {
             <Clock className="w-4 h-4" /> {formattedDate}
           </p>
         </div>
+        
+        <button
+          onClick={handleGenerateTasks}
+          disabled={isGenerating}
+          className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors disabled:opacity-70 shadow-sm"
+        >
+          {isGenerating ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            <Sparkles className="w-4 h-4" />
+          )}
+          {isGenerating ? "Menyusun Tugas..." : "Generate AI Task"}
+        </button>
       </div>
 
       {tasks.length === 0 ? (
@@ -78,7 +105,7 @@ export default function TaskTab({ date }: TaskTabProps) {
           <ListTodo className="w-12 h-12 text-slate-300 mx-auto mb-3" />
           <h3 className="text-lg font-medium text-slate-900">Belum ada tugas</h3>
           <p className="text-sm text-slate-500 mt-1 max-w-sm mx-auto">
-            Daftar tugas akan di-generate secara otomatis oleh AI setelah Anda memverifikasi hasil ekstraksi.
+            Klik tombol "Generate AI Task" di atas untuk membiarkan AI menganalisis data ekstraksi gambar dan membuat daftar tugas untuk Anda hari ini.
           </p>
         </div>
       ) : (
@@ -116,9 +143,7 @@ export default function TaskTab({ date }: TaskTabProps) {
                 </h3>
                 
                 {task.description && (
-                  <p className="text-sm mt-1 opacity-80 line-clamp-2">
-                    {task.description}
-                  </p>
+                  <TaskChecklist task={task} updateTaskDescription={updateTaskDescription} />
                 )}
               </div>
             </div>

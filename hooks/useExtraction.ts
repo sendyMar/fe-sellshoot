@@ -83,12 +83,13 @@ export function useExtraction() {
     }
   };
 
-  const saveUploadedScreenshots = async (imageUrls: string[], platform: string, uploadSession: string) => {
+  const saveUploadedScreenshots = async (imageUrls: string[], platform: string, tag: string, uploadSession: string) => {
     if (!token) return false;
     try {
       const res = await extractionService.saveScreenshots(token, {
         image_urls: imageUrls,
         platform,
+        tag,
         upload_session: uploadSession
       });
       if (res.success) {

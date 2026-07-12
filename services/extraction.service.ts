@@ -10,7 +10,7 @@ export interface ScreenshotResponse {
 }
 
 export const extractionService = {
-  async saveScreenshots(token: string, data: { image_urls: string[], platform: string, upload_session: string }) {
+  async saveScreenshots(token: string, data: { image_urls: string[], platform: string, tag: string, upload_session: string }) {
     return apiClient.post('/api/extraction/upload/', data, token);
   },
 

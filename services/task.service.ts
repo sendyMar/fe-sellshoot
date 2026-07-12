@@ -20,7 +20,11 @@ export const taskService = {
     return apiClient.post('/api/tasks/generate/', { date }, token);
   },
 
-  async updateTaskStatus(token: string, id: number, isCompleted: boolean): Promise<{ success: boolean }> {
-    return apiClient.patch(`/api/tasks/${id}/`, { is_completed: isCompleted }, token);
+  async updateTaskStatus(token: string, id: number, isCompleted: boolean, description?: string): Promise<{ success: boolean }> {
+    const payload: any = { is_completed: isCompleted };
+    if (description !== undefined) {
+      payload.description = description;
+    }
+    return apiClient.patch(`/api/tasks/${id}/`, payload, token);
   }
 };

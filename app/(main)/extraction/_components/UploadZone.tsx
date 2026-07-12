@@ -10,6 +10,7 @@ import imageCompression from "browser-image-compression";
 
 export function UploadZone() {
   const [platform, setPlatform] = useState<string>("shopee");
+  const [tag, setTag] = useState<string>("order_list");
   const { saveUploadedScreenshots } = useExtraction();
   const [isSaving, setIsSaving] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
@@ -19,6 +20,13 @@ export function UploadZone() {
     { id: "tokopedia", name: "Tokopedia" },
     { id: "instagram", name: "Instagram" },
     { id: "other", name: "Lainnya" },
+  ];
+
+  const tags = [
+    { id: "order_list", name: "Daftar Pesanan" },
+    { id: "order_detail", name: "Detail Pesanan" },
+    { id: "product_stock", name: "Stok Produk" },
+    { id: "chat", name: "Chat Pelanggan" },
   ];
 
   const handleBeforeUpload = async (files: File[]) => {
@@ -55,17 +63,31 @@ export function UploadZone() {
           <p className="text-sm text-slate-500">Pilih platform dan unggah gambar (maks. 5 gambar/sesi)</p>
         </div>
         
-        <select
-          value={platform}
-          onChange={(e) => setPlatform(e.target.value)}
-          className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 outline-none focus:border-violet-500 shadow-sm"
-        >
-          {platforms.map((p) => (
-            <option key={p.id} value={p.id}>
-              {p.name}
-            </option>
-          ))}
-        </select>
+        <div className="flex space-x-3">
+          <select
+            value={platform}
+            onChange={(e) => setPlatform(e.target.value)}
+            className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 outline-none focus:border-violet-500 shadow-sm"
+          >
+            {platforms.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.name}
+              </option>
+            ))}
+          </select>
+
+          <select
+            value={tag}
+            onChange={(e) => setTag(e.target.value)}
+            className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 outline-none focus:border-violet-500 shadow-sm font-medium"
+          >
+            {tags.map((t) => (
+              <option key={t.id} value={t.id}>
+                {t.name}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {errorMsg && (
@@ -90,7 +112,7 @@ export function UploadZone() {
               const urls = res.map((file) => file.ufsUrl || file.url);
               const sessionId = uuidv4();
               
-              const success = await saveUploadedScreenshots(urls, platform, sessionId);
+              const success = await saveUploadedScreenshots(urls, platform, tag, sessionId);
               if (success) {
                 toast.success(`${urls.length} gambar berhasil diupload`);
               } else {
