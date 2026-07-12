@@ -13,6 +13,7 @@ import {
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/statistics", label: "Statistik", icon: BarChart3 },
   { href: "/catalog", label: "Katalog", icon: Package },
 ];
 
