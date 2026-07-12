@@ -28,13 +28,18 @@ export default function DailyTaskDrawer({ date, isOpen, onClose, isReadOnly }: D
       <div className="fixed inset-0 bg-black/40 z-50 transition-opacity" onClick={onClose} />
 
       {/* Drawer */}
-      <div className="fixed right-0 top-0 h-screen w-full md:w-[50vw] bg-slate-50 shadow-2xl z-50 flex flex-col animate-in slide-in-from-right duration-300">
+      <div className="fixed right-0 bottom-0 md:top-0 h-[90vh] md:h-screen w-full md:w-[50vw] bg-slate-50 shadow-2xl z-50 flex flex-col rounded-t-3xl md:rounded-none animate-in slide-in-from-bottom-full md:slide-in-from-bottom-0 md:slide-in-from-right-full duration-300">
         
+        {/* Mobile Drag Handle */}
+        <div className="md:hidden w-full flex justify-center pt-3 pb-1 bg-white rounded-t-3xl">
+          <div className="w-12 h-1.5 bg-slate-200 rounded-full" />
+        </div>
+
         {/* Header */}
-        <div className="bg-white border-b border-slate-200 p-6 flex flex-col gap-4">
+        <div className="bg-white border-b border-slate-200 p-4 md:p-6 flex flex-col gap-4">
           <div className="flex justify-between items-start">
             <div>
-              <h2 className="text-2xl font-bold text-slate-800">Task Harian</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-slate-800">Task Harian</h2>
               <div className="flex items-center gap-2 mt-2 text-slate-500 font-medium">
                 <CalendarIcon size={16} />
                 <span>{formattedDate}</span>
